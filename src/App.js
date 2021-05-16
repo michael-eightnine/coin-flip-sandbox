@@ -1,11 +1,13 @@
 import { Canvas } from "@react-three/fiber";
-import CoinScene from "./CoinScene";
+import Scene from "./three/Scene";
+import Loader from './Loader';
 
 const App = () => (
   <div className="canvas-container">
-    <Canvas colorManagement shadowMap>
-      <CoinScene />
+    <Canvas colorManagement>
+      <Scene />
     </Canvas>
+    <Loader />
   </div>
 );
 
