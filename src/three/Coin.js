@@ -1,20 +1,23 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import * as THREE from "three";
 import { useLoader, useThree } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import iconSrc from "../icons/icon-gold.svg";
+import icon1Src from "../icons/icon-gold-1.svg";
+import icon2Src from "../icons/icon-gold-2.svg";
 // import icon2Src from "../icons/icon-purp.svg";
 
 import { Html } from "@react-three/drei";
 
 const Coin = () => {
+  const [currentIcon, setCurrentIcon] = useState(1);
   const meshRef = useRef();
   const animationRef = useRef({ isAnimating: false });
   const camera = useThree((three) => three.camera);
 
   const gltf = useLoader(GLTFLoader, "./models/gold-coin.glb");
 
+  // Idle animation handlers, these are paused by the flip animation when it is initiated
   useEffect(() => {
     if (!meshRef.current) return;
 
@@ -28,21 +31,30 @@ const Coin = () => {
       ease: "Power1.easeOut",
     });
 
-    // 180 spin
+    // 360 spin + icon swap
     animationRef.current.initialSpin = gsap.to(meshRef.current.rotation, {
       delay: 0,
       repeatDelay: 2,
       duration: 2,
-      y: `+=${THREE.Math.degToRad(180)}`,
+      y: `+=${THREE.Math.degToRad(360)}`,
       yoyo: false,
       repeat: -1,
       ease: "back",
+      onRepeat: () => {
+        // Wait 100ms so the icon swap happens right after the coin begins to spin again
+        // Using a function within our setState call ensures we're using the most recent state for our comparison
+        // otherwise it would reference the initial state value from the first time this function was called
+        setTimeout(() => {
+          setCurrentIcon(currentState => currentState === 1 ? 2 : 1);
+        }, 100);
+      },
     });
   }, [meshRef]);
 
   const onClick = () => {
-    if(animationRef.current.isAnimating) return;
+    if (animationRef.current.isAnimating) return;
 
+    // Pause idle animations and set our isAnimating flag to true to prevent additional click events
     animationRef.current.initialPosition.pause();
     animationRef.current.initialSpin.pause();
     animationRef.current.isAnimating = true;
@@ -109,6 +121,7 @@ const Coin = () => {
       ease: "back.out(3)",
       onComplete: () => {
         setTimeout(() => {
+          // Wait 2s and then restart the idle loop
           animationRef.current.initialPosition.invalidate().restart();
           animationRef.current.initialSpin.invalidate().restart();
           animationRef.current.isAnimating = false;
@@ -143,7 +156,11 @@ const Coin = () => {
         <primitive object={gltf.scene} scale={3} />
         <Html center transform zIndexRange={[5, 6]}>
           <div className="icon-wrap">
-            <img className="icon" src={iconSrc} alt="coin-icon" />
+            <img
+              className="icon"
+              src={currentIcon === 1 ? icon1Src : icon2Src}
+              alt="coin-icon"
+            />
             {/* <img className="icon" src={icon2Src} alt="coin-icon" /> */}
           </div>
         </Html>
