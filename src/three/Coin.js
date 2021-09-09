@@ -3,9 +3,8 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { useLoader, useThree } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import icon1Src from "../icons/icon-gold-1.svg";
-import icon2Src from "../icons/icon-gold-2.svg";
-// import icon2Src from "../icons/icon-purp.svg";
+import icon1Src from "../icons/endo-icon.svg";
+// import icon2Src from "../˝icons/icon-gold-2.svg";
 
 import { Html } from "@react-three/drei";
 
@@ -21,34 +20,36 @@ const Coin = () => {
   useEffect(() => {
     if (!meshRef.current) return;
 
-    // Bounce animation
-    animationRef.current.initialPosition = gsap.to(meshRef.current.position, {
-      delay: 0,
-      duration: 2,
-      y: "+=.35",
-      yoyo: true,
-      repeat: -1,
-      ease: "Power1.easeOut",
-    });
+    setTimeout(() => {
+      // Bounce animation
+      // animationRef.current.initialPosition = gsap.to(meshRef.current.position, {
+      //   delay: 0,
+      //   duration: 1.5,
+      //   y: "+=.15",
+      //   yoyo: true,
+      //   repeat: -1,
+      //   ease: "Power1.easeOut",
+      // });
 
-    // 360 spin + icon swap
-    animationRef.current.initialSpin = gsap.to(meshRef.current.rotation, {
-      delay: 0,
-      repeatDelay: 2,
-      duration: 2,
-      y: `+=${THREE.Math.degToRad(360)}`,
-      yoyo: false,
-      repeat: -1,
-      ease: "back",
-      onRepeat: () => {
-        // Wait 100ms so the icon swap happens right after the coin begins to spin again
-        // Using a function within our setState call ensures we're using the most recent state for our comparison
-        // otherwise it would reference the initial state value from the first time this function was called
-        setTimeout(() => {
-          setCurrentIcon(currentState => currentState === 1 ? 2 : 1);
-        }, 100);
-      },
-    });
+      // 360 spin + icon swap
+      animationRef.current.initialSpin = gsap.to(meshRef.current.rotation, {
+        delay: 2,
+        // repeatDelay: 1.5,
+        duration: 4.25,
+        y: `+=${THREE.Math.degToRad(360)}`,
+        yoyo: false,
+        repeat: -1,
+        ease: "linear",
+        onRepeat: () => {
+          // Wait 100ms so the icon swap happens right after the coin begins to spin again
+          // Using a function within our setState call ensures we're using the most recent state for our comparison
+          // otherwise it would reference the initial state value from the first time this function was called
+          setTimeout(() => {
+            // setCurrentIcon((currentState) => (currentState === 1 ? 2 : 1));
+          }, 100);
+        },
+      });
+    }, 0);
   }, [meshRef]);
 
   const onClick = () => {
@@ -158,15 +159,15 @@ const Coin = () => {
           <div className="icon-wrap">
             <img
               className="icon"
-              src={currentIcon === 1 ? icon1Src : icon2Src}
+              src={icon1Src}
               alt="coin-icon"
             />
             {/* <img className="icon" src={icon2Src} alt="coin-icon" /> */}
           </div>
         </Html>
       </mesh>
-      <mesh onClick={() => onClick()} position={[0, 0, 3]}>
-        <planeBufferGeometry attach="geometry" args={[3, 3]} />
+      <mesh onClick={() => {}} position={[0, 0, 3]}>
+        <planeBufferGeometry attach="geometry" args={[10, 3]} />
         <meshPhongMaterial
           attach="material"
           color="black"
